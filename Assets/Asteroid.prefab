@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 7622242811451432649}
   - component: {fileID: 4607802633102525189}
   - component: {fileID: 3537382818108014099}
-  - component: {fileID: 5591558617019425266}
   - component: {fileID: 6907648421344419114}
+  - component: {fileID: -6333634945094121186}
   m_Layer: 0
   m_Name: Asteroid
   m_TagString: Untagged
@@ -110,18 +110,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &5591558617019425266
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6355711959713685244}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5ef570170ada9f2499dc553a61603d59, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &6907648421344419114
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -134,3 +122,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83a312567cd1278459193a2dcd971912, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-6333634945094121186
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6355711959713685244}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4fced5fbc0937df48abb3e1f2f6cab4a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  triggeringTag: Projectile
+  sizeMultiplier: 0.5
+  separation: 2

@@ -4,17 +4,36 @@ public class PlayerController : MonoBehaviour {
 
     //public player speed
     public float speed;
+    
+    // --- NEW JUMP VARIABLES ---
+    public float jumpForce = 8f;
+    public Transform groundCheck; // A point at the player's feet
+    public float groundDistance = 0.4f; // Radius of the ground check sphere
+    public LayerMask groundMask; // A mask to determine what is ground
 
     //private player rigidbody
     private Rigidbody rb;
+    private bool isGrounded;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         rb = GetComponent<Rigidbody>();
     }
 
-    // Update is called once per frame
+    // Use Update for input checks
+    void Update()
+    {
+        // Ground Check
+        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+
+        // Check for jump input
+        if (Input.GetButtonDown("Jump") && isGrounded)
+        {
+            // Apply an immediate upward force
+            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        }
+    }
+
     void FixedUpdate()
     {
         // Horizontal and Vertical variables for movement
