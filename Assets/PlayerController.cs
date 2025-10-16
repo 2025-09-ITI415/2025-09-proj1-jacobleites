@@ -1,49 +1,70 @@
 using UnityEngine;
+using UnityEngine.UI; // <-- Make sure this is added!
 
 public class PlayerController : MonoBehaviour {
 
-    //public player speed
+    // Movement Variables
     public float speed;
-    
-    // --- NEW JUMP VARIABLES ---
     public float jumpForce = 8f;
-    public Transform groundCheck; // A point at the player's feet
-    public float groundDistance = 0.4f; // Radius of the ground check sphere
-    public LayerMask groundMask; // A mask to determine what is ground
+    public Transform groundCheck;
+    public float groundDistance = 0.4f;
+    public LayerMask groundMask;
+    
+    // --- NEW UI AND SCORE VARIABLES ---
+    public Text countText;
+    public Text winText;
+    private int count;
 
-    //private player rigidbody
+    // Private variables
     private Rigidbody rb;
     private bool isGrounded;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+
+        // --- NEW ---
+        // Initialize the score and UI when the game starts
+        count = 0;
+        SetCountText();
+        winText.text = "";
     }
 
-    // Use Update for input checks
     void Update()
     {
-        // Ground Check
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 
-        // Check for jump input
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
-            // Apply an immediate upward force
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         }
     }
 
     void FixedUpdate()
     {
-        // Horizontal and Vertical variables for movement
         float moveHorizontal = Input.GetAxis("Horizontal");
         float moveVertical = Input.GetAxis("Vertical");
-
-        // Vector3 to update movement (X & Z only)
         Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
-
-        // Multiply by 'speed'
         rb.AddForce(movement * speed);
+    }
+    
+    // --- NEW HELPER FUNCTIONS ---
+
+    // This public function can be called from other scripts (like our collectible)
+    public void IncrementScore()
+    {
+
+            count = count + 1;
+            SetCountText();   
+
+    }
+
+    void SetCountText()
+    {
+        countText.text = "Count: " + count.ToString();
+        if (count >= 12) 
+        {
+            winText.text = "You Win!";
+        }
     }
 }

@@ -2,63 +2,55 @@ using UnityEngine;
 
 public class SplitOnCollision : MonoBehaviour
 {
-    // You can set this tag in the Unity Inspector
-    public string triggeringTag = "Projectile";
-
-    [Header("Split Settings")]
-    [Tooltip("The new size of each block (e.g., 0.5 is half size).")]
+    [Header("Shrink Settings")]
+    [Tooltip("The tag of the object that causes this to shrink (e.g., a projectile).")]
+    public string triggerTag = "Projectile";
+    [Tooltip("How small the cube becomes (e.g., 0.5 is half size).")]
     public float sizeMultiplier = 0.5f;
+    [Tooltip("The material the cube changes to after shrinking.")]
+    public Material collectibleMaterial;
 
-    [Tooltip("The amount of empty space to create between the two new blocks.")]
-    public float separation = 0.2f;
+    // A private variable to track the cube's state
+    private bool isCollectible = false;
 
-
+    // STAGE 1: Shrink when hit by a projectile
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag(triggeringTag))
+        // Check if this cube hasn't been shrunk yet AND if it was hit by a projectile
+        if (!isCollectible && collision.gameObject.CompareTag(triggerTag))
         {
-            SplitBlock();
+            // 1. Shrink the cube
+            transform.localScale *= sizeMultiplier;
+
+            // 2. Change its material
+            if (collectibleMaterial != null)
+            {
+                GetComponent<Renderer>().material = collectibleMaterial;
+            }
+
+            // 3. Turn its collider into a trigger so the player can collect it
+            GetComponent<Collider>().isTrigger = true;
+            
+            // 4. Update its state so this can't happen again
+            isCollectible = true;
         }
     }
 
-private void SplitBlock()
-{
-    // Store the original's properties before any changes
-    Vector3 originalPosition = transform.position;
-    Vector3 originalScale = transform.localScale;
+    // STAGE 2: Get collected when touched by the player
+    private void OnTriggerEnter(Collider other)
+    {
+        // Check if this cube is in its collectible state AND if it was touched by the Player
+        if (isCollectible && other.CompareTag("Projectile"))
+        {
+            // Find the PlayerController and tell it to add a point
+            PlayerController player = other.GetComponent<PlayerController>();
+            if (player != null)
+            {
+                player.IncrementScore();
+            }
 
-    // Create a perfect clone of this GameObject
-    GameObject newBlock = Instantiate(gameObject, originalPosition, transform.rotation);
-    
-    // Calculate the new scale, keeping the original shape
-    Vector3 newScale = originalScale * sizeMultiplier;
-
-    // Apply the new, smaller scale to both blocks
-    transform.localScale = newScale;
-    newBlock.transform.localScale = newScale;
-
-    // --- MODIFIED SECTION START ---
-
-    // 1. Get the object's right direction
-    Vector3 splitDirection = transform.right;
-
-    // 2. Flatten the direction by removing any vertical (Y) movement
-    splitDirection.y = 0;
-
-    // 3. Normalize the vector to ensure consistent distance, regardless of original rotation
-    splitDirection.Normalize();
-
-    // 4. Calculate how far to move each block from the center
-    float moveDistance = (newScale.x / 2f) + (separation / 2f);
-
-    // 5. Apply the new positions using the flattened direction
-    transform.position -= splitDirection * moveDistance;
-    newBlock.transform.position += splitDirection * moveDistance;
-    
-    // --- MODIFIED SECTION END ---
-
-    // Destroy the script component on both blocks to prevent them from splitting again
-    Destroy(newBlock.GetComponent<SplitOnCollision>());
-    Destroy(this);
-}
+            // Destroy this cube
+            Destroy(gameObject);
+        }
+    }
 }
